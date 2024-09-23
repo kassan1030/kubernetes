@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redisーpod
+spec:
+  selector:
+    matchLabels:
+      app: redis-pod
+  serviceName: redis-pod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis-pod
+    spec:
+      containers:
+      - name: redis
+        image: redis:5.0-rc
+        ports:
+        - containerPort: 7001
+        command: ["/conf/fix-ip.sh", "redis-server", "/conf/redis.conf"]
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -p 7001 -h $(hostname) ping"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -p 7001 -h $(hostname) ping"
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: conf
+          mountPath: /conf
+          readOnly: false
+        - name: data
+          mountPath: /data
+          readOnly: false
+      volumes:
+      - name: conf
+        configMap:
+          name: redis-cluster
+          defaultMode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        name: redis-cluster
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100Mi

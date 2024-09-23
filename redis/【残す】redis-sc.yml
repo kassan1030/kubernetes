@@ -3,5 +3,4 @@ kind: StorageClass
 metadata:
   name: redis-local-storage
 provisioner: docker.io/hostpath
-volumeBindingMode: Immediate
-reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer

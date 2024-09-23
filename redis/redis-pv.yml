@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-db-pv
+spec:
+  storageClassName: redis-local-storage # StorageClassのnameを入れる。
+  volumeMode: Filesystem
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/Users/katsushiando/Source/Github/kubernetes/redis/data" # ローカルの適当なパスを指定
+    type: DirectoryOrCreate # ローカルにディレクトリがなければ作ってくれる。
