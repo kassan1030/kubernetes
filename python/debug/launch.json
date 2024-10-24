@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "K8s_nodeJSデバッグ",
+            "port": 10000,
+            "type": "node",
+            "request": "attach",
+            "skipFiles": [
+                "<node_internals>/app"
+            ]
+        },
+        {
+            "name": "K8s_FastAPIデバッグ",
+            "type": "python",
+            "request": "attach",
+            "port": 30084,
+            "host": "localhost",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/Github/kubernetes/python/app",
+                    "remoteRoot": "/app"
+                }
+            ]
+        }
+    ]
+}
