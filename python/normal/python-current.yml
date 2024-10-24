@@ -14,7 +14,7 @@ spec:
         - containerPort: 5678
           name: debug
       command: [ "/bin/bash", "-c", "--" ]
-      args: ["pip install -r /app/requirements.txt; python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main3:app --reload --proxy-headers --host='0.0.0.0' --port=8000"]
+      args: ["pip install -r /app/requirements.txt; python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --reload --proxy-headers --host='0.0.0.0' --port=8000"]
       resources: 
           requests:
             memory: "1Gi"
