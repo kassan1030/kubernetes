@@ -1,0 +1,21 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: hoge
+  labels: 
+    app: python
+spec:
+  type: NodePort
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30083
+    name: current
+  - port: 5678
+    targetPort: 5678
+    nodePort: 30084
+    name: debug
+    protocol: TCP
+  selector:
+    app: python
+

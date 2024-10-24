@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python
+  labels: 
+    app: python
+spec:
+  containers:
+    - name: python
+      image: andok10/python-slim-gunicon:3.10
+      ports:
+        - containerPort: 8000
+          name: current
+        - containerPort: 5678
+          name: debug
+      command: [ "/bin/bash", "-c", "--" ]
+      args: ["pip install -r /app/requirements.txt; python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main3:app --reload --proxy-headers --host='0.0.0.0' --port=8000"]
+      resources: 
+          requests:
+            memory: "1Gi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "250m"
+      volumeMounts:
+      - name: application
+        mountPath: "/app"
+  volumes:
+  - name: application
+    hostPath:
+      path: /Users/katsushiando/Source/Github/kubernetes/python/app
+      type: Directory
