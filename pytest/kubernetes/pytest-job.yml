@@ -1,0 +1,48 @@
+# pytest-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pytest-runner-job # Jobの名前。ユニークである必要があります。
+spec:
+  backoffLimit: 0 # 失敗したPodを再試行しない（テスト失敗時は再実行不要なため）
+  template:
+    spec:
+      restartPolicy: Never # JobのPodは常に完了するか失敗するまで実行し、再起動しない
+      containers:
+      - name: pytest-runner
+        image: andok10/pytest-runner:1.0 # ステップ2でプッシュしたイメージ
+        command: ["pytest"] # pytestコマンド
+        args:
+          - "/tests"
+          - "--cov=/app"
+          - "--html=/tmp/report.html --self-contained-html"
+          - "--cov-report=html:/tmp/cov_report.html"
+          - "--junitxml=/tmp/test_results.xml"
+        resources:
+          limits:
+            memory: "256Mi" # メモリ制限
+            cpu: "250m"    # CPU制限
+          requests:
+            memory: "128Mi" # メモリ要求
+            cpu: "100m"     # CPU要求
+        # テスト結果を永続化したい場合（CI/CDツールが結果を読み取るためなど）
+        volumeMounts:
+        - name: app
+          mountPath: /app
+        - name: tests
+          mountPath: /tests
+        - name: test-results-volume
+          mountPath: /tmp
+      volumes:
+        - name: app
+          hostPath:
+            path: /Users/katsushiando/Source/Github/kubernetes/pytest/app
+            type: Directory
+        - name: tests
+          hostPath:
+            path: /Users/katsushiando/Source/Github/kubernetes/pytest/tests
+            type: Directory
+        - name: test-results-volume
+          hostPath:
+            path: /Users/katsushiando/Source/Github/kubernetes/pytest/tmp 
+            type: Directory
